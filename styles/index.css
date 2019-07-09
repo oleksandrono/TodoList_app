@@ -45,7 +45,7 @@ header>h1 {
   padding: 5px 10px;
   transition: 0.3s ease;
   outline: none;
-  margin-left: 10px;
+  margin: 5px 10px;
 }
 .button:hover {
   cursor: pointer;

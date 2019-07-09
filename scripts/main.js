@@ -14,7 +14,7 @@ addTaskForm.addEventListener('submit', (event)=>{
 
 let submitAddTask = document.getElementById('addTaskSubmit');
 
-submitAddTask.onclick = ()=> addTask();
+submitAddTask.addEventListener('click', ()=>addTask());
 
 
 function createTask(taskName, index){
@@ -29,6 +29,7 @@ function createTask(taskName, index){
     createCheckbox.type = 'checkbox';
     createCheckbox.id = 'checkbox'+index;
     createCheckbox.classList = 'checkbox';
+    createCheckbox.setAttribute('onchange', `doneTask(${index})`);
 
     let createP = document.createElement('p');
     createP.id = 'taskName' + index;
@@ -72,19 +73,28 @@ function addTask(){
         } ,1000);
     }  
     else{
-        //give task id
-        let taskId = 0;
-        if(tasks.length===0){
-            taskId=0;
-        }
-        else if(tasks.length>0){
-            taskId=tasks.length;
-        }
 
+        let idList = [];
+        tasks.forEach((element)=>{
+            idList.push(element.taskId)
+        });
+        
+        let taskId = 0;
+        if(tasks === null){
+            taskId = 0;
+        }
+        else if(tasks !== null){
+            for(let i = 0; i<tasks.length; i++){ 
+              taskId=Math.max.apply(null, idList)+1;
+            }
+            
+
+        }
 
 
         task.taskId = taskId;
         task.taskName = taskName.value;
+        task.done = false;
         tasks.push(task);
 
         //add task
@@ -134,7 +144,7 @@ function changeTask(event){
 
     let taskName = parentElementForTask.firstChild.nextSibling;
     
-    taskName.remove();
+    
     let createChangeBlock = document.createElement('div');
     createChangeBlock.classList = 'change_task_block';
     createChangeBlock.id = 'changeTaskBlock'+changedTaskIdNum;
@@ -142,14 +152,24 @@ function changeTask(event){
     createChangeInput.className = 'changeTaskInput';
     createChangeInput.id = 'changeInput'+changedTaskIdNum;
     createChangeInput.placeholder = taskName.textContent;
-    let createChangeButton = document.createElement('button');
-    createChangeButton.className = 'button';
-    createChangeButton.setAttribute('onclick', `confirmChange(${changedTaskIdNum})`);  
-    createChangeButton.textContent = 'Confirm change';
+    let createConfirmChange = document.createElement('button');
+    createConfirmChange.className = 'button';
+    createConfirmChange.setAttribute('onclick', `confirmChange(${changedTaskIdNum})`);
+    createConfirmChange.textContent = 'Confirm change';
 
-    parentElementForTask.insertBefore(createChangeBlock, buttons);
+    let createCancelChange = document.createElement('button');
+    createCancelChange.className = 'button';
+    createCancelChange.setAttribute('onclick', `cancelChange(${changedTaskIdNum})`);
+    createCancelChange.textContent = 'Cancel change';
+
+    
+    taskName.style.display = 'none';
+    buttons.style.display = 'none';
+
+    parentElementForTask.appendChild(createChangeBlock);
     createChangeBlock.appendChild(createChangeInput);
-    createChangeBlock.appendChild(createChangeButton);    
+    createChangeBlock.appendChild(createConfirmChange); 
+    createChangeBlock.append(createCancelChange);   
 
 
 }
@@ -163,25 +183,55 @@ function confirmChange(changedTaskIdNum){
         } ,1000);
     }
     else{
-        
         tasks.forEach((element, index) => {
             if(index===changedTaskIdNum){
-                element.taskName = changedInputField.value;
-                localStorage.setItem('tasks', JSON.stringify(tasks));
+                tasks[index].taskName = changedInputField.value;
                 
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+
                 let parentElementForTask = document.getElementById('task'+changedTaskIdNum);
                 let taskName = parentElementForTask.firstChild.nextSibling;
                 taskName.remove();
+                let buttons = document.getElementById('buttons'+changedTaskIdNum);
+                buttons.style.display = 'block';
 
                 let createP = document.createElement('p');
                 createP.id = 'taskName' + index;
                 createP.textContent = changedInputField.value;
-                let buttons = document.getElementById('buttons'+changedTaskIdNum);
-                parentElementForTask.insertBefore(createP, buttons);  
+                
+                parentElementForTask.insertBefore(createP, buttons);
+
+                parentElementForTask.lastChild.remove();
 
             }
         });
+        
 
         changedInputField.value = '';
+    }
+}
+
+function cancelChange(changedTaskIdNum){
+    let parentElementForTask = document.getElementById('task'+changedTaskIdNum);
+    parentElementForTask.lastChild.remove();
+
+    let buttons = document.getElementById('buttons'+changedTaskIdNum);
+
+    let taskName = parentElementForTask.firstChild.nextSibling;
+
+    taskName.style.display = 'block';
+    buttons.style.display = 'block';
+    
+}
+
+function doneTask(doneTaskIdNum){
+    let checkbox = document.getElementById('checkbox'+doneTaskIdNum);
+    let taskElement = document.getElementById('task'+doneTaskIdNum);
+    
+    if(checkbox.checked == true){
+        taskElement.style.backgroundColor = '#e1e1e1';
+    }
+    else{
+        taskElement.style.backgroundColor = 'inherit';
     }
 }
