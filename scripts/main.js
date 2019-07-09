@@ -36,6 +36,7 @@ function createTask(taskName, index){
     
     let createButtonsBlock = document.createElement('div');
     createButtonsBlock.classList = 'buttons';
+    createButtonsBlock.id = 'buttons'+index;
 
     let createChangeButton = document.createElement('button');
     createChangeButton.classList = 'button';
@@ -122,5 +123,65 @@ function deleteTask(event){
 }
 
 function changeTask(event){
+    let regex = /\d+/;
 
+    let changedTaskIdNum = parseInt(event.target.id.match(regex));
+
+    let parentElementForTask = document.getElementById('task'+changedTaskIdNum);
+
+    let buttons = document.getElementById('buttons'+changedTaskIdNum);
+
+
+    let taskName = parentElementForTask.firstChild.nextSibling;
+    
+    taskName.remove();
+    let createChangeBlock = document.createElement('div');
+    createChangeBlock.classList = 'change_task_block';
+    createChangeBlock.id = 'changeTaskBlock'+changedTaskIdNum;
+    let createChangeInput = document.createElement('input');
+    createChangeInput.className = 'changeTaskInput';
+    createChangeInput.id = 'changeInput'+changedTaskIdNum;
+    createChangeInput.placeholder = taskName.textContent;
+    let createChangeButton = document.createElement('button');
+    createChangeButton.className = 'button';
+    createChangeButton.setAttribute('onclick', `confirmChange(${changedTaskIdNum})`);  
+    createChangeButton.textContent = 'Confirm change';
+
+    parentElementForTask.insertBefore(createChangeBlock, buttons);
+    createChangeBlock.appendChild(createChangeInput);
+    createChangeBlock.appendChild(createChangeButton);    
+
+
+}
+
+function confirmChange(changedTaskIdNum){
+    let changedInputField = document.getElementById('changeInput'+changedTaskIdNum);
+    if(changedInputField.value.length<1){
+        changedInputField.style.borderBottomColor = 'red';
+        setTimeout(()=>{
+            changedInputField.style.borderBottomColor = 'gray';  
+        } ,1000);
+    }
+    else{
+        
+        tasks.forEach((element, index) => {
+            if(index===changedTaskIdNum){
+                element.taskName = changedInputField.value;
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                
+                let parentElementForTask = document.getElementById('task'+changedTaskIdNum);
+                let taskName = parentElementForTask.firstChild.nextSibling;
+                taskName.remove();
+
+                let createP = document.createElement('p');
+                createP.id = 'taskName' + index;
+                createP.textContent = changedInputField.value;
+                let buttons = document.getElementById('buttons'+changedTaskIdNum);
+                parentElementForTask.insertBefore(createP, buttons);  
+
+            }
+        });
+
+        changedInputField.value = '';
+    }
 }
