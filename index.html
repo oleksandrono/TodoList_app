@@ -1,46 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>TodoList App</title>
 
-    <link rel="stylesheet" href="styles/reset.css" />
-    <link rel="stylesheet" href="styles/index.css" />
+    <link rel="stylesheet" href="styles/reset.css">
+    <link rel="stylesheet" href="styles/index.css">
 
     <script src="scripts/main.js" defer></script>
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="container">
+
+</head>
+<body>
+    
+<div class="wrapper">
+   <div class="container">
         <header>
-          <h1>TodoList App</h1>
+            <h1>TodoList App</h1>
         </header>
         <main>
-          <hr />
-          <h2 class="tasks_text">Tasks</h2>
+            <hr>
+            <h2 class="lists_text">Lists</h2>
+            <div class="list_block">
+                <div class="create_list" id="createList">
+                    <input type="text" placeholder="List name" id="listNameField" class="input_list_name">
+                    <button id="submitCreateList" class="button">Create list</button>
+                </div>
+                <ul id="lists">
 
-          <div id="tasksList" class="tasks_list">
-            <div class="add_task" id="addTask">
-              <form action="POST" id="addTaskForm">
-                <input
-                  id="taskName"
-                  class="task_name_input"
-                  type="text"
-                  placeholder="Task name"
-                />
-                <input
-                  id="addTaskSubmit"
-                  class="button"
-                  type="submit"
-                  value="Add task"
-                />
-              </form>
+                </ul>  
             </div>
-          </div>
+
+            <h2 class="tasks_text">Tasks<span id="listName"></span></h2>
+
+            <p id="hintText">Choose or create list.</p>
+
+            <div id="tasksList" class="tasks_list">
+
+                <div class="add_task" id="addTask">
+                    <form action="POST" id="addTaskForm">
+                        <input id="taskName" class="task_name_input" type="text" placeholder="Task name">
+                        <input id="addTaskSubmit" class="button" type="submit" value="Add task">
+                    </form>
+                </div>
+
+            </div>
+
         </main>
-      </div>
-    </div>
-  </body>
+    </div> 
+</div>
+
+
+</body>
 </html>

@@ -17,13 +17,15 @@ a {
 header>h1 {
   font-size: 2em;
 }
-.tasks_text {
+.tasks_text,
+.lists_text {
   font-size: 1.5em;
 }
 .tasks_list {
   width: 100%;
   height: auto;
   margin: 10px auto;
+  display: none;
 }
 .task {
   display: flex;
@@ -37,6 +39,10 @@ header>h1 {
   padding: 0 10px;
   width: 75%;
   height: auto;
+}
+#hintText {
+  margin: 10px 0;
+  font-size: 1.2em;
 }
 .button:first-child {
   margin-right: 50px;
@@ -63,10 +69,43 @@ header>h1 {
   justify-content: flex-end;
 }
 .task_name_input,
-.changeTaskInput {
+.changeTaskInput,
+.input_list_name {
   width: 50%;
   border: none;
   border-bottom: 1px solid #808080;
   font-size: 1.1em;
   outline: none;
+}
+.input_list_name {
+  width: 30%;
+}
+.list_block {
+  margin: 10px 0;
+  width: auto;
+  height: auto;
+}
+#lists {
+  list-style: none;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.list {
+  margin: 0 10px;
+  padding: 5px 10px 0 10px;
+  border: 1px solid transparent;
+  border-bottom: 1px solid #808080;
+  transition: 0.3s ease;
+}
+.list:first-child {
+  margin: 0 10px 0 0;
+}
+.list:hover {
+  cursor: pointer;
+  border-color: #e1e1e1;
+  background-color: #e1e1e1;
+}
+.del {
+  width: 100%;
 }
