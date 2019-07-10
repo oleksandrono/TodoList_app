@@ -42,6 +42,7 @@ function outList(listNameField){
     createLi.className = 'list';
     createLi.id = listIdName;
     createLi.textContent = listNameField;
+    createLi.setAttribute('oncontextmenu', 'clearList(event)');
     createLi.setAttribute('onclick', 'chooseList(event)');
 
     parentElementForList.appendChild(createLi);
@@ -58,7 +59,10 @@ function chooseList(event){
     let hintText = document.getElementById('hintText');
     hintText.style.display = 'none';
     let listNameText = document.getElementById('listName');
-    listNameText.innerText = ` in ${event.target.id}.`;
+    listNameText.innerText = `in ${event.target.id}.`;
+
+    document.getElementById('tasksList').style.display = 'block';
+    document.getElementById('listName').style.visibility = 'visible';
 
     lists.forEach((element, index)=>{ 
         if(lists[index].listId===event.target.id){
@@ -70,28 +74,36 @@ function chooseList(event){
     
 }
 
+function clearList(event){
+    event.preventDefault();
 
-let listsArray = Array.from(document.getElementsByClassName('list'));
-listsArray.forEach((element, index)=>{
-    element.oncontextmenu = (event)=>{
-        event.preventDefault();
-        lists.splice(index, 1); 
+    if(event.target.id === JSON.parse(localStorage.getItem('currentListId'))){
+        document.getElementById('tasksList').style.display='none';
+        document.getElementById('hintText').style.display = 'block';
+        document.getElementById('listName').style.visibility = 'hidden';
+    }
 
-        let newArray = tasks.filter((element)=>{
-            if(element.listId!==event.target.id){
-                return element.listId;
-            }
+    lists.forEach((element, index)=>{;
+        if(event.target.id===element.listId){
+            lists.splice(index, 1);   
+        }
+    });
 
-        });
+    let newArray = tasks.filter((element)=>{
+        if(element.listId!==event.target.id){
+            return element.listId;
+        }
 
-        localStorage.setItem('tasks', JSON.stringify(newArray));
-        localStorage.setItem('lists', JSON.stringify(lists));
+    });
 
-        element.remove();
-        
-        
-    };
-});
+    localStorage.setItem('tasks', JSON.stringify(newArray));
+    localStorage.setItem('lists', JSON.stringify(lists));
+
+    document.getElementById(event.target.id).remove();
+            
+         
+}
+
 
 
 
