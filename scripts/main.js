@@ -29,7 +29,7 @@ function createTask(taskName, index){
     createCheckbox.type = 'checkbox';
     createCheckbox.id = 'checkbox'+index;
     createCheckbox.classList = 'checkbox';
-    createCheckbox.setAttribute('onchange', `doneTask(${index})`);
+    createCheckbox.setAttribute('onchange', `completedTask(${index})`);
 
     let createP = document.createElement('p');
     createP.id = 'taskName' + index;
@@ -94,7 +94,7 @@ function addTask(){
 
         task.taskId = taskId;
         task.taskName = taskName.value;
-        task.done = false;
+        task.completed = false;
         tasks.push(task);
 
         //add task
@@ -109,8 +109,17 @@ function addTask(){
 
 function outTaskAfterLoad(){
     if(tasks.length>=1){
-        for(let task in tasks){
-            createTask(tasks[task].taskName, tasks[task].taskId);
+        for(let taskIndex in tasks){
+            createTask(tasks[taskIndex].taskName, tasks[taskIndex].taskId);
+            if(tasks[taskIndex].completed===true){
+                let taskElement = document.getElementById('task'+taskIndex);
+                taskElement.style.backgroundColor = 'rgb(243, 243, 243)';
+                let checkbox = document.getElementById('checkbox'+taskIndex);
+                checkbox.checked = true;
+                let buttons = document.getElementById('buttons'+taskIndex);
+                buttons.firstChild.setAttribute('disabled', 'true');
+                buttons.firstChild.nextSibling.setAttribute('disabled', 'true');
+            }
         }
     }
 }
@@ -224,14 +233,27 @@ function cancelChange(changedTaskIdNum){
     
 }
 
-function doneTask(doneTaskIdNum){
-    let checkbox = document.getElementById('checkbox'+doneTaskIdNum);
-    let taskElement = document.getElementById('task'+doneTaskIdNum);
+function completedTask(completedTaskIdNum){
+    let checkbox = document.getElementById('checkbox'+completedTaskIdNum);
+    let taskElement = document.getElementById('task'+completedTaskIdNum);
     
-    if(checkbox.checked == true){
-        taskElement.style.backgroundColor = '#e1e1e1';
-    }
-    else{
-        taskElement.style.backgroundColor = 'inherit';
-    }
+    tasks.forEach((element, index)=>{
+        let buttons = document.getElementById('buttons'+index);
+        if(completedTaskIdNum===index){;
+            if(checkbox.checked == true){
+                taskElement.style.backgroundColor = 'rgb(243, 243, 243)';
+                tasks[index].completed=true;
+                buttons.firstChild.setAttribute('disabled', 'true');
+                buttons.firstChild.nextSibling.setAttribute('disabled', 'true');
+            }
+            else{
+                taskElement.style.backgroundColor = 'inherit';
+                tasks[index].completed=false;
+                buttons.firstChild.removeAttribute('disabled', 'true');
+                buttons.firstChild.nextSibling.removeAttribute('disabled', 'true');
+            }
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+    });
+
 }

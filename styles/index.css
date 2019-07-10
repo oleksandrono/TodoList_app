@@ -33,6 +33,11 @@ header>h1 {
   padding: 0 0 5px 0;
   border-bottom: 1px solid #808080;
 }
+.task>p {
+  padding: 0 10px;
+  width: 75%;
+  height: auto;
+}
 .button:first-child {
   margin-right: 50px;
 }
@@ -52,8 +57,14 @@ header>h1 {
   border: 1px solid #d1d1d1;
   background-color: #d1d1d1;
 }
+.change_task_block {
+  width: 80%;
+  display: flex;
+  justify-content: flex-end;
+}
 .task_name_input,
 .changeTaskInput {
+  width: 50%;
   border: none;
   border-bottom: 1px solid #808080;
   font-size: 1.1em;
