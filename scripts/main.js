@@ -222,6 +222,7 @@ function outTaskAfterListChoosen(choosenListId) {
                     let buttons = document.getElementById("buttons" + element.taskId);
                     buttons.firstChild.setAttribute("disabled", "true");
                     buttons.firstChild.nextSibling.setAttribute("disabled", "true");
+                    document.getElementById('taskName'+element.taskId).style.textDecoration = 'line-through';
                 }  
             }
         });
@@ -276,16 +277,15 @@ function changeTask(event) {
     createChangeInput.id = "changeInput" + changedTaskIdNum;
     createChangeInput.placeholder = taskName.textContent;
     createChangeInput.value = taskName.textContent;
+    createChangeInput.setAttribute('onkeydown', `applyChangeForKeypress(event, ${changedTaskIdNum})`);
     let createConfirmChange = document.createElement("button");
     createConfirmChange.className = "button";
-    createConfirmChange.setAttribute("onclick", `confirmChange(${changedTaskIdNum})`
-    );
+    createConfirmChange.setAttribute("onclick", `confirmChange(${changedTaskIdNum})`);
     createConfirmChange.textContent = "Confirm change";
 
     let createCancelChange = document.createElement("button");
     createCancelChange.className = "button";
-    createCancelChange.setAttribute("onclick",`cancelChange(${changedTaskIdNum})`
-    );
+    createCancelChange.setAttribute("onclick",`cancelChange(${changedTaskIdNum})`);
     createCancelChange.textContent = "Cancel change";
 
     taskName.style.display = "none";
@@ -344,6 +344,15 @@ function cancelChange(changedTaskIdNum) {
     buttons.style.display = "block";
 }
 
+function applyChangeForKeypress(event, changedTaskIdNum){
+    if(event.keyCode === 13){
+        confirmChange(changedTaskIdNum);
+    }
+    else if(event.keyCode === 27){
+        confirmChange(changedTaskIdNum);
+    }
+}
+
 function completedTask(completedTaskIdNum) {
     let checkbox = document.getElementById("checkbox" + completedTaskIdNum);
     let taskElement = document.getElementById("task" + completedTaskIdNum);
@@ -356,14 +365,17 @@ function completedTask(completedTaskIdNum) {
                 tasks[index].completed = true;
                 buttons.firstChild.setAttribute("disabled", "true");
                 buttons.firstChild.nextSibling.setAttribute("disabled", "true");
+                document.getElementById('taskName'+element.taskId).style.textDecoration = 'line-through';
             } 
             else {
                 taskElement.style.backgroundColor = "inherit";
                 tasks[index].completed = false;
                 buttons.firstChild.removeAttribute("disabled", "true");
                 buttons.firstChild.nextSibling.removeAttribute("disabled", "true");
+                document.getElementById('taskName'+element.taskId).style.textDecoration = 'none';
             }
             localStorage.setItem("tasks", JSON.stringify(tasks));
         }
     });
 }
+
