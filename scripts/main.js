@@ -379,3 +379,11 @@ function completedTask(completedTaskIdNum) {
     });
 }
 
+
+
+fetch('http://localhost:3000/some_data')
+    .then((response)=>response.json())
+    .then((myJson=>console.log(JSON.stringify(myJson))));
+
+
+// source - "https://developer.mozilla.org/ru/docs/Web/API/Fetch_API/Using_Fetch" 
