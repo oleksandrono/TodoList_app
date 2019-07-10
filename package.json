@@ -1,0 +1,23 @@
+{
+  "name": "todolistapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "json-server": "^0.15.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oleksandrono/TodoList_app.git"
+  },
+  "author": "Sasha Onoshko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oleksandrono/TodoList_app/issues"
+  },
+  "homepage": "https://github.com/oleksandrono/TodoList_app#readme"
+}
