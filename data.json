@@ -1,16 +1,26 @@
 {
-  "some_data": [
+  "lists": [
     {
-      "id": "1",
-      "name": "some_name"
+      "listId": "list1",
+      "id": 1
     },
     {
-      "id": "2",
-      "name": "some_name2"
-    },
-    {
-      "id": "3",
-      "name": "some_name3_changed"
+      "listId": "list2",
+      "id": 2
     }
+  ],
+  "tasks": [
+    {
+      "task": {
+        "taskId": 0,
+        "taskName": "task1 l1",
+        "completed": false,
+        "listId": "list1"
+      },
+      "id": 1
+    }
+  ],
+  "currentListId": [
+    "list1"
   ]
 }

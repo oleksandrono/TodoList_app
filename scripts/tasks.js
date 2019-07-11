@@ -1,8 +1,27 @@
+let urlTasks = 'http://localhost:4000/tasks';
+
+
+//get tasks
+fetch(urlTasks)
+    .then((response)=>response.json())
+    .then((myJson)=>{
+        getTasks(myJson);
+    })
+    .catch(error=>console.error(error));
+
 let tasks = [];
 
-if (localStorage.getItem("tasks") !== null) {
-    tasks = JSON.parse(localStorage.getItem("tasks"));
+function getTasks(data){
+    if(data!==null){
+        tasks = data;
+    }
 }
+
+
+
+// if (localStorage.getItem("tasks") !== null) {
+//     tasks = JSON.parse(localStorage.getItem("tasks"));
+// }
 
 let addTaskForm = document.getElementById("addTaskForm");
 
@@ -63,56 +82,77 @@ function addTask() {
     let taskName = document.getElementById("taskName");
 
     if (taskName.value.length < 1) {
-    taskName.style.borderBottomColor = "red";
-    setTimeout(() => {
-        taskName.style.borderBottomColor = "gray";
-    }, 1000);
+        taskName.style.borderBottomColor = "red";
+        setTimeout(() => {
+            taskName.style.borderBottomColor = "gray";
+        }, 1000);
     } 
     else {
-    let idList = [];
-    tasks.forEach(element => {
-        idList.push(element.taskId);
-    });
+        let idList = [];
+        tasks.forEach(element => {
+            idList.push(element.task.taskId);
+        });
 
-    let taskId = 0;
-    if (tasks === null) {
-        taskId = 0;
-    } 
-    else if (tasks !== null) {
-        for (let i = 0; i < tasks.length; i++) {
-        taskId = Math.max.apply(null, idList) + 1;
+        let taskId = 0;
+        if (tasks === null) {
+            taskId = 0;
+        } 
+        else if (tasks !== null) {
+            for (let i = 0; i < tasks.length; i++) {
+                taskId = Math.max.apply(null, idList) + 1;
+            }
         }
+
+        task.taskId = taskId;
+        task.taskName = taskName.value;
+        task.completed = false;
+        task.listId = JSON.parse(localStorage.getItem('currentListId'));
+        tasks.push(task);
+
+        createTask(taskName.value, taskId);
+
+        taskName.value = "";
+
+        postData(urlTasks, {task})
+            .then(data=>console.log(JSON.stringify(data)))
+            .catch(error => console.error(error));
+
+
+        localStorage.setItem("tasks", JSON.stringify(tasks));
     }
+}
 
-    task.taskId = taskId;
-    task.taskName = taskName.value;
-    task.completed = false;
-    task.listId = JSON.parse(localStorage.getItem('currentListId'));
-    tasks.push(task);
-
-    createTask(taskName.value, taskId);
-
-    taskName.value = "";
-
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
+function postData(urlTasks = '', data){
+    return fetch(urlTasks, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'default',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        redirect: 'follow',
+        referrer: 'no-referrer',
+        body: JSON.stringify(data),
+    })
+    .then(response=>response.json());
 }
 
 function outTaskAfterListChoosen(choosenListId) {
     clearTaskList();
     if(tasks.length>=1){
         tasks.forEach((element, index)=>{
-            if(element.listId===choosenListId){
-                createTask(element.taskName, element.taskId);
-                if (element.completed === true) {
-                    let taskElement = document.getElementById("task" + element.taskId);
+            if(element.task.listId===choosenListId){
+                createTask(element.task.taskName, element.task.taskId);
+                if (element.task.completed === true) {
+                    let taskElement = document.getElementById("task" + element.task.taskId);
                     taskElement.style.backgroundColor = "rgb(243, 243, 243)";
-                    let checkbox = document.getElementById("checkbox" + element.taskId);
+                    let checkbox = document.getElementById("checkbox" + element.task.taskId);
                     checkbox.checked = true;
-                    let buttons = document.getElementById("buttons" + element.taskId);
+                    let buttons = document.getElementById("buttons" + element.task.taskId);
                     buttons.firstChild.setAttribute("disabled", "true");
                     buttons.firstChild.nextSibling.setAttribute("disabled", "true");
-                    document.getElementById('taskName'+element.taskId).style.textDecoration = 'line-through';
+                    document.getElementById('taskName'+element.task.taskId).style.textDecoration = 'line-through';
                 }  
             }
         });
@@ -122,7 +162,7 @@ function outTaskAfterListChoosen(choosenListId) {
 function clearTaskList(){
     tasks.forEach((element, index)=>{
         
-        let removedElemendIdNum = element.taskId;
+        let removedElemendIdNum = element.task.taskId;
 
         let removedTask = document.getElementById('task'+removedElemendIdNum);
         if(removedTask!==null){
@@ -137,7 +177,7 @@ function deleteTask(event) {
     let deletedTaskIdNum = parseInt(event.target.id.match(regex));
 
     for (let i = 0; i < tasks.length; i++) {
-        if (tasks[i].taskId === deletedTaskIdNum) {
+        if (tasks[i].task.taskId === deletedTaskIdNum) {
             tasks.splice(i, 1);
             let deletedTask = document.getElementById("task" + deletedTaskIdNum);
             deletedTask.remove();
@@ -253,23 +293,16 @@ function completedTask(completedTaskIdNum) {
                 tasks[index].completed = true;
                 buttons.firstChild.setAttribute("disabled", "true");
                 buttons.firstChild.nextSibling.setAttribute("disabled", "true");
-                document.getElementById('taskName'+element.taskId).style.textDecoration = 'line-through';
+                document.getElementById('taskName'+element.task.taskId).style.textDecoration = 'line-through';
             } 
             else {
                 taskElement.style.backgroundColor = "inherit";
                 tasks[index].completed = false;
                 buttons.firstChild.removeAttribute("disabled", "true");
                 buttons.firstChild.nextSibling.removeAttribute("disabled", "true");
-                document.getElementById('taskName'+element.taskId).style.textDecoration = 'none';
+                document.getElementById('taskName'+element.task.taskId).style.textDecoration = 'none';
             }
             localStorage.setItem("tasks", JSON.stringify(tasks));
         }
     });
 }
-
-fetch('http://localhost:3000/some_data')
-    .then((response)=>response.json())
-    .then((myJson=>console.log(JSON.stringify(myJson))));
-
-
-// source - "https://developer.mozilla.org/ru/docs/Web/API/Fetch_API/Using_Fetch" 

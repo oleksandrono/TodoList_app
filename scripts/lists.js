@@ -1,10 +1,29 @@
+//get lists
+
+let urlLists = 'http://localhost:4000/lists';
+
+fetch(urlLists)
+    .then((response)=>response.json())
+    .then((myJson)=>{
+        getLists(myJson);
+    })
+    .catch(error=>console.error(error));
+
+
 let lists = [];
 
-
-if(localStorage.getItem('lists')!==null){
-    lists = JSON.parse(localStorage.getItem('lists'));
-    outListAfterLoad();
+function getLists(data){
+    if(data!==null){
+        lists = data;
+        outListAfterLoad();
+    }
 }
+
+
+// if(localStorage.getItem('lists')!==null){
+//     lists = JSON.parse(localStorage.getItem('lists'));
+//     outListAfterLoad();
+// }
 
 document.getElementById('listNameField').addEventListener('keydown', ()=>addListWhenKeydown(event));
 document.getElementById('submitCreateList').addEventListener('click', () => addList());
@@ -30,12 +49,35 @@ function addList(){
         list.listId = listIdName;
         lists.push(list);
 
+        let listId = list.listId;
+
         outList(listNameField.value);
 
-        localStorage.setItem('lists', JSON.stringify(lists));
+
+        postData(urlLists, {listId})
+            .then(data=>console.log(JSON.stringify(data)))
+            .catch(error => console.error(error));
+
+        // localStorage.setItem('lists', JSON.stringify(lists));
 
         listNameField.value = '';
     }
+}
+
+function postData(urlLists = '', data){
+    return fetch(urlLists, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'default',
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        redirect: 'follow',
+        referrer: 'no-referrer',
+        body: JSON.stringify(data),
+    })
+    .then(response=>response.json());
 }
 
 function outList(listNameField){
@@ -88,7 +130,15 @@ function clearList(event){
 
     lists.forEach((element, index)=>{;
         if(event.target.id===element.listId){
-            lists.splice(index, 1);   
+            console.log(index+1);
+            fetch(urlLists+(index+1), {
+                method: 'DELETE'
+            })
+            .then(response=>response.json())
+            .catch(error=>console.error(error));
+
+            lists.splice(index, 1); 
+
         }
     });
 
@@ -99,9 +149,11 @@ function clearList(event){
 
     });
 
-    localStorage.setItem('tasks', JSON.stringify(newArray));
-    localStorage.setItem('lists', JSON.stringify(lists));
+
+    // localStorage.setItem('tasks', JSON.stringify(newArray));
+    // localStorage.setItem('lists', JSON.stringify(lists));
 
     document.getElementById(event.target.id).remove();
                    
 }
+
