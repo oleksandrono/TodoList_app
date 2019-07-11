@@ -1,7 +1,8 @@
-let urlTasks = 'http://localhost:4000/tasks';
+let urlTasks = 'http://localhost:5000/tasks';
 
 
 //get tasks
+
 fetch(urlTasks)
     .then((response)=>response.json())
     .then((myJson)=>{
@@ -14,6 +15,9 @@ let tasks = [];
 function getTasks(data){
     if(data!==null){
         tasks = data;
+    }
+    else{
+        tasks = [];
     }
 }
 
@@ -58,7 +62,7 @@ function createTask(taskName, index) {
     let createChangeButton = document.createElement("button");
     createChangeButton.classList = "button";
     createChangeButton.id = "changeTask" + index;
-    createChangeButton.textContent = "Change";
+    createChangeButton.textContent = "Edit";
     createChangeButton.setAttribute("onclick", "changeTask(event)");
 
     let createDeleteButton = document.createElement("button");
@@ -76,10 +80,9 @@ function createTask(taskName, index) {
 }
 
 function addTask() {
-
     let task = {};
 
-    let taskName = document.getElementById("taskName");
+    let taskName = document.getElementById("taskNameField");
 
     if (taskName.value.length < 1) {
         taskName.style.borderBottomColor = "red";
@@ -89,21 +92,22 @@ function addTask() {
     } 
     else {
         let idList = [];
-        tasks.forEach(element => {
-            idList.push(element.task.taskId);
-        });
-
-        let taskId = 0;
-        if (tasks === null) {
-            taskId = 0;
-        } 
-        else if (tasks !== null) {
-            for (let i = 0; i < tasks.length; i++) {
-                taskId = Math.max.apply(null, idList) + 1;
-            }
+        if(tasks.length>0){  
+            tasks.forEach((element, index) => {
+                idList.push(element.id);
+            }); 
         }
 
-        task.taskId = taskId;
+        let taskId = 1;
+        if (tasks.length == 0) {
+            taskId = 1;
+        } 
+        else if (tasks.length > 0) {
+            for (let i = 1; i <= tasks.length; i++) {
+                taskId = Math.max.apply(null, idList)+1;
+            }
+        }
+        task.id = taskId;
         task.taskName = taskName.value;
         task.completed = false;
         task.listId = JSON.parse(localStorage.getItem('currentListId'));
@@ -113,47 +117,31 @@ function addTask() {
 
         taskName.value = "";
 
-        postData(urlTasks, {task})
-            .then(data=>console.log(JSON.stringify(data)))
+        postData(urlTasks, task)
             .catch(error => console.error(error));
 
 
-        localStorage.setItem("tasks", JSON.stringify(tasks));
+        // localStorage.setItem("tasks", JSON.stringify(tasks));
     }
 }
 
-function postData(urlTasks = '', data){
-    return fetch(urlTasks, {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'default',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        redirect: 'follow',
-        referrer: 'no-referrer',
-        body: JSON.stringify(data),
-    })
-    .then(response=>response.json());
-}
 
 function outTaskAfterListChoosen(choosenListId) {
     clearTaskList();
     if(tasks.length>=1){
         tasks.forEach((element, index)=>{
-            if(element.task.listId===choosenListId){
-                createTask(element.task.taskName, element.task.taskId);
-                if (element.task.completed === true) {
-                    let taskElement = document.getElementById("task" + element.task.taskId);
+            if(element.listId===choosenListId){
+                createTask(element.taskName, element.id);
+                if (element.completed === true) {
+                    let taskElement = document.getElementById("task" + element.id);
                     taskElement.style.backgroundColor = "rgb(243, 243, 243)";
-                    let checkbox = document.getElementById("checkbox" + element.task.taskId);
+                    let checkbox = document.getElementById("checkbox" + element.id);
                     checkbox.checked = true;
-                    let buttons = document.getElementById("buttons" + element.task.taskId);
+                    let buttons = document.getElementById("buttons" + element.id);
                     buttons.firstChild.setAttribute("disabled", "true");
                     buttons.firstChild.nextSibling.setAttribute("disabled", "true");
-                    document.getElementById('taskName'+element.task.taskId).style.textDecoration = 'line-through';
-                }  
+                    document.getElementById('taskName'+element.id).style.textDecoration = 'line-through';
+                }
             }
         });
     }          
@@ -162,7 +150,7 @@ function outTaskAfterListChoosen(choosenListId) {
 function clearTaskList(){
     tasks.forEach((element, index)=>{
         
-        let removedElemendIdNum = element.task.taskId;
+        let removedElemendIdNum = element.id;
 
         let removedTask = document.getElementById('task'+removedElemendIdNum);
         if(removedTask!==null){
@@ -176,14 +164,19 @@ function deleteTask(event) {
 
     let deletedTaskIdNum = parseInt(event.target.id.match(regex));
 
-    for (let i = 0; i < tasks.length; i++) {
-        if (tasks[i].task.taskId === deletedTaskIdNum) {
-            tasks.splice(i, 1);
+    tasks.forEach((element, index)=>{
+        if(element.id==deletedTaskIdNum){
+            tasks.splice(element.id, 1);
             let deletedTask = document.getElementById("task" + deletedTaskIdNum);
             deletedTask.remove();
-            localStorage.setItem("tasks", JSON.stringify(tasks));
+            // localStorage.setItem("tasks", JSON.stringify(tasks));
+            //DELETE
+            deleteData(urlTasks, element.id)
+                .catch(error=>console.error(error));
+            
         }
-    }
+    });
+
 }
 
 function changeTask(event) {
@@ -235,10 +228,20 @@ function confirmChange(changedTaskIdNum) {
     } 
     else {
         tasks.forEach((element, index) => {
-            if (index === changedTaskIdNum) {
-                tasks[index].taskName = changedInputField.value;
+            if (element.id == changedTaskIdNum) {
+                // tasks[index].taskName = changedInputField.value;
 
-                localStorage.setItem("tasks", JSON.stringify(tasks));
+                // localStorage.setItem("tasks", JSON.stringify(tasks));
+
+                //PUT
+                putData(urlTasks, element.id, {
+                        'id':element.id,
+                        'taskName':changedInputField.value,
+                        'completed': element.completed,
+                        'listId': element.listId
+                    })
+                    .catch(error=>console.error(error));
+
 
                 let parentElementForTask = document.getElementById("task" + changedTaskIdNum);
                 let taskName = parentElementForTask.firstChild.nextSibling;
@@ -286,23 +289,40 @@ function completedTask(completedTaskIdNum) {
     let taskElement = document.getElementById("task" + completedTaskIdNum);
 
     tasks.forEach((element, index) => {
-        let buttons = document.getElementById("buttons" + index);
-        if (completedTaskIdNum === index) {
+        let buttons = document.getElementById("buttons" + element.id);
+        if (completedTaskIdNum === element.id) {
             if (checkbox.checked == true) {
+                putData(urlTasks, element.id, {
+                    'id': element.id,
+                    'taskName': element.taskName,
+                    'completed': true,
+                    'listId': element.listId
+                })
+                .catch(error=>console.error(error));
+
+                element.completed = true;
                 taskElement.style.backgroundColor = "rgb(243, 243, 243)";
-                tasks[index].completed = true;
                 buttons.firstChild.setAttribute("disabled", "true");
                 buttons.firstChild.nextSibling.setAttribute("disabled", "true");
-                document.getElementById('taskName'+element.task.taskId).style.textDecoration = 'line-through';
+                document.getElementById('taskName'+element.id).style.textDecoration = 'line-through';
             } 
             else {
+                putData(urlTasks, element.id, {
+                    'id': element.id,
+                    'taskName': element.taskName,
+                    'completed': false,
+                    'listId': element.listId
+                })
+                .catch(error=>console.error(error));
+
+                element.completed = false;
                 taskElement.style.backgroundColor = "inherit";
-                tasks[index].completed = false;
                 buttons.firstChild.removeAttribute("disabled", "true");
                 buttons.firstChild.nextSibling.removeAttribute("disabled", "true");
-                document.getElementById('taskName'+element.task.taskId).style.textDecoration = 'none';
+                document.getElementById('taskName'+element.id).style.textDecoration = 'none';
             }
-            localStorage.setItem("tasks", JSON.stringify(tasks));
+            // localStorage.setItem("tasks", JSON.stringify(tasks));
         }
     });
 }
+

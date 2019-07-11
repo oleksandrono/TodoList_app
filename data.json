@@ -1,26 +1,38 @@
 {
   "lists": [
     {
-      "listId": "list1",
-      "id": 1
+      "id": 1,
+      "listName": "list1"
     },
     {
-      "listId": "list2",
-      "id": 2
+      "id": 2,
+      "listName": "list2"
     }
   ],
   "tasks": [
     {
-      "task": {
-        "taskId": 0,
-        "taskName": "task1 l1",
-        "completed": false,
-        "listId": "list1"
-      },
-      "id": 1
+      "id": 1,
+      "taskName": "task1 l1",
+      "completed": false,
+      "listId": "1"
+    },
+    {
+      "id": 2,
+      "taskName": "task2 l1",
+      "completed": false,
+      "listId": "1"
+    },
+    {
+      "id": 3,
+      "taskName": "task1 l2",
+      "completed": false,
+      "listId": "2"
+    },
+    {
+      "id": 4,
+      "taskName": "task2 l2",
+      "completed": false,
+      "listId": "2"
     }
-  ],
-  "currentListId": [
-    "list1"
   ]
 }

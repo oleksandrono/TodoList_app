@@ -1,6 +1,6 @@
-//get lists
+let urlLists = 'http://localhost:5000/lists';
 
-let urlLists = 'http://localhost:4000/lists';
+//get lists
 
 fetch(urlLists)
     .then((response)=>response.json())
@@ -43,19 +43,34 @@ function addList(){
         }, 1000);
     }
     else{
+
+        let idList = [];
+        lists.forEach((element, index) => {
+            idList.push(element.id);
+        });
+
+        let listId = 1;
+        if (lists === null) {
+            listsId = 1;
+        } 
+        else if (lists !== null) {
+            for (let i = 1; i <= lists.length; i++) {
+                listId = Math.max.apply(null, idList) + 1;
+            }
+        }
+
         let list = {};
         
-        let listIdName = listNameField.value.split(' ').join('')
-        list.listId = listIdName;
+
+        list.id = listId;
+        list.listName = listNameField.value;
         lists.push(list);
 
-        let listId = list.listId;
 
-        outList(listNameField.value);
+        outList(listNameField.value, listId);
 
 
-        postData(urlLists, {listId})
-            .then(data=>console.log(JSON.stringify(data)))
+        postData(urlLists, list)
             .catch(error => console.error(error));
 
         // localStorage.setItem('lists', JSON.stringify(lists));
@@ -64,59 +79,49 @@ function addList(){
     }
 }
 
-function postData(urlLists = '', data){
-    return fetch(urlLists, {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'default',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        redirect: 'follow',
-        referrer: 'no-referrer',
-        body: JSON.stringify(data),
-    })
-    .then(response=>response.json());
-}
 
-function outList(listNameField){
+function outList(listNameField, listId){
     let parentElementForList = document.getElementById('lists');
 
-    let listIdName = listNameField.split(' ').join('')
+    // let listIdName = listNameField.split(' ').join('')
 
     let createLi = document.createElement('li');
     createLi.className = 'list';
-    createLi.id = listIdName;
+    createLi.id = listId;
     createLi.textContent = listNameField;
     createLi.setAttribute('oncontextmenu', 'clearList(event)');
-    createLi.setAttribute('onclick', 'chooseList(event)');
+    createLi.setAttribute('onclick', `chooseList(event)`);
 
     parentElementForList.appendChild(createLi);
 }
 
 function outListAfterLoad(){
     lists.forEach((element, index)=>{
-        outList(element.listId);
+        outList(element.listName, element.id);
     });
 }
 
 function chooseList(event){
-    let hintText = document.getElementById('hintText');
-    hintText.style.display = 'none';
-    let listNameText = document.getElementById('listName');
-    listNameText.innerText = `in ${event.target.id}.`;
 
-    document.getElementById('tasksList').style.display = 'block';
-    document.getElementById('listName').style.visibility = 'visible';
+    lists.forEach((element, index)=>{
+        if(event.target.id==element.id){
+            let hintText = document.getElementById('hintText');
+            hintText.style.display = 'none';
+            let listNameText = document.getElementById('listName');
+            listNameText.innerText = `in ${element.listName}.`;    
+            document.getElementById('tasksList').style.display = 'block';
+            document.getElementById('listName').style.visibility = 'visible';
 
-    lists.forEach((element, index)=>{ 
-        if(lists[index].listId===event.target.id){
-            localStorage.setItem('currentListId', JSON.stringify(event.target.id));
+            let targetId = event.target.id;
+            //not implementing for Rest Api
+
+
+            localStorage.setItem('currentListId', JSON.stringify(targetId));
             outTaskAfterListChoosen(event.target.id);
             document.getElementById('tasksList').style.display = 'block';
+
         }
-    });  
+    }); 
 }
 
 function clearList(event){
@@ -128,26 +133,31 @@ function clearList(event){
         document.getElementById('listName').style.visibility = 'hidden';
     }
 
-    lists.forEach((element, index)=>{;
-        if(event.target.id===element.listId){
-            console.log(index+1);
-            fetch(urlLists+(index+1), {
-                method: 'DELETE'
-            })
-            .then(response=>response.json())
-            .catch(error=>console.error(error));
+    lists.forEach((element, index)=>{
+        if(element.id==event.target.id){
+
+            deleteData(urlLists, element.id)
+                .catch(error=>console.log(error));
 
             lists.splice(index, 1); 
 
         }
     });
 
-    let newArray = tasks.filter((element)=>{
-        if(element.listId!==event.target.id){
-            return element.listId;
-        }
+    // tasks.forEach((element, index)=>{
+    //     if(element.listId===event.target.id){
+    //         deleteData(urlTasks, element.id)
+    //         .catch(error=>console.error(error));
+    //     }
+    // });
 
-    });
+    // let newArray = tasks.filter((element)=>{
+    //     if(element.listId!==event.target.id){
+    //         return element.listId;
+    //     }
+
+    // });
+    // console.log(newArray);
 
 
     // localStorage.setItem('tasks', JSON.stringify(newArray));
@@ -156,4 +166,6 @@ function clearList(event){
     document.getElementById(event.target.id).remove();
                    
 }
+
+
 
