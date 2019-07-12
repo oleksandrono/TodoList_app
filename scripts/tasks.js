@@ -157,8 +157,6 @@ function deleteTask(event) {
             tasks.splice(element.id, 1);
             let deletedTask = document.getElementById("task" + deletedTaskIdNum);
             deletedTask.remove();
-            // localStorage.setItem("tasks", JSON.stringify(tasks));
-            //DELETE
             deleteData(urlTasks, element.id)
                 .catch(error=>console.error(error));
             
@@ -308,3 +306,4 @@ function completedTask(completedTaskIdNum) {
         }
     });
 }
+
