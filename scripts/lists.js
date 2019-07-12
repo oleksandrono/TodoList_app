@@ -1,14 +1,11 @@
-let urlLists = 'http://localhost:5000/lists';
-
-//get lists
+let urlLists = 'http://localhost:3000/lists';
 
 fetch(urlLists)
     .then((response)=>response.json())
-    .then((myJson)=>{
-        getLists(myJson);
+    .then((data)=>{
+        getLists(data);
     })
     .catch(error=>console.error(error));
-
 
 let lists = [];
 
@@ -18,12 +15,6 @@ function getLists(data){
         outListAfterLoad();
     }
 }
-
-
-// if(localStorage.getItem('lists')!==null){
-//     lists = JSON.parse(localStorage.getItem('lists'));
-//     outListAfterLoad();
-// }
 
 document.getElementById('listNameField').addEventListener('keydown', ()=>addListWhenKeydown(event));
 document.getElementById('submitCreateList').addEventListener('click', () => addList());
@@ -60,30 +51,22 @@ function addList(){
         }
 
         let list = {};
-        
 
         list.id = listId;
         list.listName = listNameField.value;
         lists.push(list);
 
-
         outList(listNameField.value, listId);
-
 
         postData(urlLists, list)
             .catch(error => console.error(error));
-
-        // localStorage.setItem('lists', JSON.stringify(lists));
 
         listNameField.value = '';
     }
 }
 
-
 function outList(listNameField, listId){
     let parentElementForList = document.getElementById('lists');
-
-    // let listIdName = listNameField.split(' ').join('')
 
     let createLi = document.createElement('li');
     createLi.className = 'list';
@@ -104,23 +87,20 @@ function outListAfterLoad(){
 function chooseList(event){
 
     lists.forEach((element, index)=>{
+
         if(event.target.id==element.id){
+
             let hintText = document.getElementById('hintText');
             hintText.style.display = 'none';
             let listNameText = document.getElementById('listName');
             listNameText.innerText = `in ${element.listName}.`;    
             document.getElementById('tasksList').style.display = 'block';
-            document.getElementById('listName').style.visibility = 'visible';
 
-            let targetId = event.target.id;
-            //not implementing for Rest Api
+            localStorage.setItem('currentListId', JSON.stringify(event.target.id));
 
-
-            localStorage.setItem('currentListId', JSON.stringify(targetId));
-            outTaskAfterListChoosen(event.target.id);
-            document.getElementById('tasksList').style.display = 'block';
-
+            outTaskAfterListChoosen(event.target.id); 
         }
+
     }); 
 }
 
@@ -144,28 +124,6 @@ function clearList(event){
         }
     });
 
-    // tasks.forEach((element, index)=>{
-    //     if(element.listId===event.target.id){
-    //         deleteData(urlTasks, element.id)
-    //         .catch(error=>console.error(error));
-    //     }
-    // });
-
-    // let newArray = tasks.filter((element)=>{
-    //     if(element.listId!==event.target.id){
-    //         return element.listId;
-    //     }
-
-    // });
-    // console.log(newArray);
-
-
-    // localStorage.setItem('tasks', JSON.stringify(newArray));
-    // localStorage.setItem('lists', JSON.stringify(lists));
-
     document.getElementById(event.target.id).remove();
                    
 }
-
-
-

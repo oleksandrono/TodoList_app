@@ -2,37 +2,15 @@
   "lists": [
     {
       "id": 1,
-      "listName": "list1"
-    },
-    {
-      "id": 2,
-      "listName": "list2"
+      "listName": "InCapm"
     }
   ],
   "tasks": [
     {
-      "id": 1,
-      "taskName": "task1 l1",
-      "completed": false,
-      "listId": "1"
-    },
-    {
       "id": 2,
-      "taskName": "task2 l1",
+      "taskName": "Review Todolist task",
       "completed": false,
       "listId": "1"
-    },
-    {
-      "id": 3,
-      "taskName": "task1 l2",
-      "completed": false,
-      "listId": "2"
-    },
-    {
-      "id": 4,
-      "taskName": "task2 l2",
-      "completed": false,
-      "listId": "2"
     }
   ]
 }

@@ -1,7 +1,4 @@
-let urlTasks = 'http://localhost:5000/tasks';
-
-
-//get tasks
+let urlTasks = 'http://localhost:3000/tasks';
 
 fetch(urlTasks)
     .then((response)=>response.json())
@@ -20,12 +17,6 @@ function getTasks(data){
         tasks = [];
     }
 }
-
-
-
-// if (localStorage.getItem("tasks") !== null) {
-//     tasks = JSON.parse(localStorage.getItem("tasks"));
-// }
 
 let addTaskForm = document.getElementById("addTaskForm");
 
@@ -48,7 +39,7 @@ function createTask(taskName, index) {
     let createCheckbox = document.createElement("input");
     createCheckbox.type = "checkbox";
     createCheckbox.id = "checkbox" + index;
-    createCheckbox.classList = "checkbox";
+    createCheckbox.classList = "checkbox form-check-input";
     createCheckbox.setAttribute("onchange", `completedTask(${index})`);
 
     let createP = document.createElement("p");
@@ -60,13 +51,13 @@ function createTask(taskName, index) {
     createButtonsBlock.id = "buttons" + index;
 
     let createChangeButton = document.createElement("button");
-    createChangeButton.classList = "button";
+    createChangeButton.classList = "button btn-primary";
     createChangeButton.id = "changeTask" + index;
     createChangeButton.textContent = "Edit";
     createChangeButton.setAttribute("onclick", "changeTask(event)");
 
     let createDeleteButton = document.createElement("button");
-    createDeleteButton.classList = "button";
+    createDeleteButton.classList = "button btn-primary";
     createDeleteButton.id = "deleteTask" + index;
     createDeleteButton.textContent = "Delete";
     createDeleteButton.setAttribute("onclick", "deleteTask(event)");
@@ -120,11 +111,8 @@ function addTask() {
         postData(urlTasks, task)
             .catch(error => console.error(error));
 
-
-        // localStorage.setItem("tasks", JSON.stringify(tasks));
     }
 }
-
 
 function outTaskAfterListChoosen(choosenListId) {
     clearTaskList();
@@ -194,18 +182,18 @@ function changeTask(event) {
     createChangeBlock.classList = "change_task_block";
     createChangeBlock.id = "changeTaskBlock" + changedTaskIdNum;
     let createChangeInput = document.createElement("input");
-    createChangeInput.className = "changeTaskInput";
+    createChangeInput.className = "changeTaskInput form-control";
     createChangeInput.id = "changeInput" + changedTaskIdNum;
     createChangeInput.placeholder = taskName.textContent;
     createChangeInput.value = taskName.textContent;
     createChangeInput.setAttribute('onkeydown', `applyChangeForKeypress(event, ${changedTaskIdNum})`);
     let createConfirmChange = document.createElement("button");
-    createConfirmChange.className = "button";
+    createConfirmChange.className = "button btn-primary";
     createConfirmChange.setAttribute("onclick", `confirmChange(${changedTaskIdNum})`);
     createConfirmChange.textContent = "Confirm change";
 
     let createCancelChange = document.createElement("button");
-    createCancelChange.className = "button";
+    createCancelChange.className = "button btn-primary";
     createCancelChange.setAttribute("onclick",`cancelChange(${changedTaskIdNum})`);
     createCancelChange.textContent = "Cancel change";
 
@@ -229,11 +217,7 @@ function confirmChange(changedTaskIdNum) {
     else {
         tasks.forEach((element, index) => {
             if (element.id == changedTaskIdNum) {
-                // tasks[index].taskName = changedInputField.value;
 
-                // localStorage.setItem("tasks", JSON.stringify(tasks));
-
-                //PUT
                 putData(urlTasks, element.id, {
                         'id':element.id,
                         'taskName':changedInputField.value,
@@ -241,7 +225,6 @@ function confirmChange(changedTaskIdNum) {
                         'listId': element.listId
                     })
                     .catch(error=>console.error(error));
-
 
                 let parentElementForTask = document.getElementById("task" + changedTaskIdNum);
                 let taskName = parentElementForTask.firstChild.nextSibling;
@@ -280,7 +263,7 @@ function applyChangeForKeypress(event, changedTaskIdNum){
         confirmChange(changedTaskIdNum);
     }
     else if(event.keyCode === 27){
-        confirmChange(changedTaskIdNum);
+        cancelChange(changedTaskIdNum);
     }
 }
 
@@ -321,8 +304,7 @@ function completedTask(completedTaskIdNum) {
                 buttons.firstChild.nextSibling.removeAttribute("disabled", "true");
                 document.getElementById('taskName'+element.id).style.textDecoration = 'none';
             }
-            // localStorage.setItem("tasks", JSON.stringify(tasks));
+
         }
     });
 }
-
